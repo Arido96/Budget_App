@@ -1,7 +1,9 @@
-import 'package:budget_app/dashboard/ui/dashboard_page.dart';
+import 'package:budget_app/features/dashboard/ui/dashboard_page.dart';
+import 'package:budget_app/injection/injection.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  configureDependencies();
   runApp(const MyApp());
 }
 
