@@ -1,4 +1,5 @@
 import 'package:budget_app/features/dashboard/ui/dashboard_page.dart';
+import 'package:budget_app/features/shared/theme/custom_theme.dart';
 import 'package:budget_app/injection/injection.dart';
 import 'package:flutter/material.dart';
 
@@ -15,9 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
+      theme: appTheme,
       home: const DashboardPage(),
     );
   }

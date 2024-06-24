@@ -6,6 +6,7 @@ import 'package:budget_app/injection/injection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -79,8 +80,17 @@ class _ExpenseDetailView extends StatelessWidget {
             height: 20,
             color: expenses[index].categroy?.color ?? Colors.grey,
           ),
-          title: Text(expenses[index].name),
-          trailing: Text('\$${expenses[index].value.toString()}'),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(expenses[index].name),
+              Text(DateFormat('dd.MM.yyy').format(expenses[index].dateTime))
+            ],
+          ),
+          trailing: Text(
+            '\$${expenses[index].value.toString()}',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
         );
       },
     );

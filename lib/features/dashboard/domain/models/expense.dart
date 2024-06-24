@@ -5,9 +5,11 @@ class Expense {
     required this.name,
     required this.value,
     required this.categroy,
+    required this.dateTime,
   });
 
   final String name;
   final double value;
+  final DateTime dateTime;
   final ExpenseCategory? categroy;
 }

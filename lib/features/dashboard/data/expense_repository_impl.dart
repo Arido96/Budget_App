@@ -22,6 +22,7 @@ class ExpenseRepositoryImpl implements BaseExpenseRepository {
         categroy: categories
             .where((element) => element.name == 'Entertainment')
             .firstOrNull,
+        dateTime: DateTime.now(),
       ),
       Expense(
         name: "Netflix",
@@ -29,6 +30,7 @@ class ExpenseRepositoryImpl implements BaseExpenseRepository {
         categroy: categories
             .where((element) => element.name == 'Entertainment')
             .firstOrNull,
+        dateTime: DateTime.now(),
       ),
       Expense(
         name: "Gaming",
@@ -36,18 +38,21 @@ class ExpenseRepositoryImpl implements BaseExpenseRepository {
         categroy: categories
             .where((element) => element.name == 'Entertainment')
             .firstOrNull,
+        dateTime: DateTime.now(),
       ),
       Expense(
         name: "Gas",
         value: 50,
         categroy:
             categories.where((element) => element.name == 'Car').firstOrNull,
+        dateTime: DateTime.now(),
       ),
       Expense(
         name: "Rent",
         value: 50,
         categroy:
             categories.where((element) => element.name == 'Rent').firstOrNull,
+        dateTime: DateTime.now(),
       ),
     ];
   }
