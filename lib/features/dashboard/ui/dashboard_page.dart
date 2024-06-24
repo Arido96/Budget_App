@@ -1,6 +1,7 @@
 import 'package:budget_app/features/dashboard/domain/models/expense.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_cubit.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_state.dart';
+import 'package:budget_app/features/shared/category/domain/models/expense_categroy_value.dart';
 import 'package:budget_app/injection/injection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -35,10 +36,13 @@ class _DashboardViewState extends State<_DashboardView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Expanded(child: _DonutChart(expenses: state.expenses)),
+              Expanded(
+                  child: _DonutChart(
+                      categoryWithValue: state.expensesCategoryValue)),
               SizedBox(
                   height: 100,
-                  child: _ExpensesLegend(expenses: state.expenses)),
+                  child:
+                      _ExpensesLegend(expenses: state.expensesCategoryValue)),
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -46,21 +50,7 @@ class _DashboardViewState extends State<_DashboardView> {
                 ),
               ),
               Expanded(
-                child: ListView.separated(
-                  itemCount: sections.length,
-                  separatorBuilder: (context, index) => const Divider(),
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: Container(
-                        width: 20,
-                        height: 20,
-                        color: sections[index].color,
-                      ),
-                      title: Text(sections[index].title),
-                      trailing: Text('\$${sections[index].value.toString()}'),
-                    );
-                  },
-                ),
+                child: _ExpenseDetailView(expenses: state.expenses),
               ),
             ],
           ),
@@ -70,8 +60,8 @@ class _DashboardViewState extends State<_DashboardView> {
   }
 }
 
-class _DonutChart extends StatelessWidget {
-  const _DonutChart({
+class _ExpenseDetailView extends StatelessWidget {
+  const _ExpenseDetailView({
     required this.expenses,
   });
 
@@ -79,15 +69,42 @@ class _DonutChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ListView.separated(
+      itemCount: expenses.length,
+      separatorBuilder: (context, index) => const Divider(),
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: Container(
+            width: 20,
+            height: 20,
+            color: expenses[index].categroy?.color ?? Colors.grey,
+          ),
+          title: Text(expenses[index].name),
+          trailing: Text('\$${expenses[index].value.toString()}'),
+        );
+      },
+    );
+  }
+}
+
+class _DonutChart extends StatelessWidget {
+  const _DonutChart({
+    required this.categoryWithValue,
+  });
+
+  final List<ExpenseCategoryValue> categoryWithValue;
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         PieChart(
           PieChartData(
-            sections: expenses
+            sections: categoryWithValue
                 .map(
                   (e) => PieChartSectionData(
                     value: e.value,
-                    color: e.categoryColor,
+                    color: e.expenseCategory.color,
                     showTitle: false,
                   ),
                 )
@@ -112,7 +129,7 @@ class _DonutChart extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Text(
-              '${expenses.map((e) => e.value).reduce((a, b) => a + b).toString()} €',
+              '${categoryWithValue.map((e) => e.value).reduce((a, b) => a + b).toString()} €',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -130,7 +147,7 @@ class _ExpensesLegend extends StatelessWidget {
     required this.expenses,
   });
 
-  final List<Expense> expenses;
+  final List<ExpenseCategoryValue> expenses;
 
   @override
   Widget build(BuildContext context) {
@@ -146,11 +163,11 @@ class _ExpensesLegend extends StatelessWidget {
                 Container(
                   width: 25,
                   height: 25,
-                  color: expenses[index].categoryColor,
+                  color: expenses[index].expenseCategory.color,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 5),
-                  child: Text(expenses[index].name),
+                  child: Text(expenses[index].expenseCategory.name),
                 ),
               ],
             ),

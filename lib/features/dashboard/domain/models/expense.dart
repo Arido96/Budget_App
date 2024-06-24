@@ -9,5 +9,5 @@ class Expense {
 
   final String name;
   final double value;
-  final ExpenseCategory categroy;
+  final ExpenseCategory? categroy;
 }
