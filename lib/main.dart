@@ -17,7 +17,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: appTheme,
-      home: const DashboardPage(),
+      home: DashboardPage(
+        month: DateTime.now(),
+      ),
     );
   }
 }

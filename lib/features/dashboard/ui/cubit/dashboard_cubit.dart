@@ -21,7 +21,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
       emit(state.copyWith(
           status: DashboardStateStatus.success,
-          expensesCategoryValue: getAllCategoriesWithSum(result),
+          expensesCategoryValue: getAllCategoriesWithSum(result.expenses),
           expenses: result));
     } on Exception catch (e, _) {
       emit(

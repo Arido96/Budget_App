@@ -15,7 +15,7 @@ class ExpenseRepositoryImpl implements BaseExpenseRepository {
   Future<List<Expense>> loadExpensesForMonth({required DateTime date}) async {
     final categories = await _baseCategoryRepository.getAll();
 
-    return [
+    final allexpenses = [
       Expense(
         name: "Lieferando",
         value: 22,
@@ -54,6 +54,13 @@ class ExpenseRepositoryImpl implements BaseExpenseRepository {
             categories.where((element) => element.name == 'Rent').firstOrNull,
         dateTime: DateTime.now(),
       ),
-    ];
+    ].toList();
+
+    final expensesForMonth = allexpenses
+        .where((x) =>
+            x.dateTime.month == date.month && x.dateTime.year == date.year)
+        .toList();
+
+    return expensesForMonth;
   }
 }

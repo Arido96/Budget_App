@@ -1,5 +1,5 @@
 import 'package:budget_app/features/dashboard/domain/interfaces/base_expense_repository.dart';
-import 'package:budget_app/features/dashboard/domain/models/expense.dart';
+import 'package:budget_app/features/dashboard/domain/models/monthly_expenses.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
@@ -9,7 +9,15 @@ class LoadExpensesForMonthUseCase {
       : _expenseRepository = expenseRepository;
   final BaseExpenseRepository _expenseRepository;
 
-  Future<List<Expense>> call({required DateTime date}) {
-    return _expenseRepository.loadExpensesForMonth(date: date);
+  Future<MonthlyExpenses> call({required DateTime date}) async {
+    final expenses = await _expenseRepository.loadExpensesForMonth(date: date);
+
+    final totalExpenses = expenses.map((e) => e.value).reduce((a, b) => a + b);
+
+    return MonthlyExpenses(
+      month: date,
+      expenses: expenses,
+      totalExpenses: totalExpenses,
+    );
   }
 }

@@ -1,4 +1,4 @@
-import 'package:budget_app/features/dashboard/domain/models/expense.dart';
+import 'package:budget_app/features/dashboard/domain/models/monthly_expenses.dart';
 import 'package:budget_app/features/shared/category/domain/models/expense_categroy_value.dart';
 import 'package:budget_app/shared/Errors/base_error.dart';
 
@@ -14,19 +14,19 @@ class DashboardState {
     this.status = DashboardStateStatus.idle,
     this.error,
     this.expensesCategoryValue = const [],
-    this.expenses = const [],
+    this.expenses,
   });
 
   final DashboardStateStatus status;
   final List<ExpenseCategoryValue> expensesCategoryValue;
-  final List<Expense> expenses;
+  final MonthlyExpenses? expenses;
   final BaseError? error;
 
   DashboardState copyWith({
     DashboardStateStatus? status,
     BaseError? error,
     List<ExpenseCategoryValue>? expensesCategoryValue,
-    List<Expense>? expenses,
+    MonthlyExpenses? expenses,
   }) {
     return DashboardState(
       error: error ?? this.error,
