@@ -12,7 +12,10 @@ class LoadExpensesForMonthUseCase {
   Future<MonthlyExpenses> call({required DateTime date}) async {
     final expenses = await _expenseRepository.loadExpensesForMonth(date: date);
 
-    final totalExpenses = expenses.map((e) => e.value).reduce((a, b) => a + b);
+    double totalExpenses = 0;
+    if (expenses.isNotEmpty) {
+      totalExpenses = expenses.map((e) => e.value).reduce((a, b) => a + b);
+    }
 
     return MonthlyExpenses(
       month: date,

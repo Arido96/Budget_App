@@ -19,9 +19,12 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) =>
-            getIt<DashboardCubit>()..loadDataForThisMonth(dateTime: month),
-        child: Scaffold(body: _DashboardView()));
+      create: (context) =>
+          getIt<DashboardCubit>()..loadDataForThisMonth(dateTime: month),
+      child: Scaffold(
+        body: _DashboardView(),
+      ),
+    );
   }
 }
 
@@ -31,116 +34,123 @@ class _DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<_DashboardView> {
-  final List<PieChartSectionData> sections = [];
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
           if (state.status == DashboardStateStatus.success) {
-            return GestureDetector(
-              onPanUpdate: (details) {
-                // Swiping in right direction.
-                if (details.delta.dx > 0) {
-                  final nextMonth = DateTime(
-                    state.expenses!.month.year,
-                    state.expenses!.month.month - 1,
-                  );
+            return PageView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(25),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              final nextMonth = DateTime(
+                                state.expenses!.month.year,
+                                state.expenses!.month.month - 1,
+                              );
 
-                  Navigator.of(context).pushReplacement(
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          DashboardPage(month: nextMonth),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(-1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.ease;
+                              Navigator.of(context).pushReplacement(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      DashboardPage(month: nextMonth),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(-1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.ease;
 
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
 
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                }
-
-                // Swiping in left direction.
-                if (details.delta.dx < 0) {
-                  final previouseMonth = DateTime(
-                    state.expenses!.month.year,
-                    state.expenses!.month.month + 1,
-                  );
-                  Navigator.of(context).pushReplacement(
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          DashboardPage(month: previouseMonth),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.ease;
-
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
-
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                }
-              },
-              child: PageView(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(25),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          DateFormat('MMMM - yyyy')
-                              .format(state.expenses!.month),
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displaySmall,
-                        ),
-                        Expanded(
-                          child: _DonutChart(
-                            categoryWithValue: state.expensesCategoryValue,
-                            totalOffAllExpenses:
-                                state.expenses?.totalExpenses ?? 0,
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_back_ios),
                           ),
-                        ),
-                        SizedBox(
-                          height: 100,
-                          child: _ExpensesLegend(
-                            expenses: state.expensesCategoryValue,
+                          Text(
+                            DateFormat('MMMM - yyyy')
+                                .format(state.expenses!.month),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.displaySmall,
                           ),
-                        ),
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Letze ausgaben',
+                          IconButton(
+                            onPressed: () {
+                              final previouseMonth = DateTime(
+                                state.expenses!.month.year,
+                                state.expenses!.month.month + 1,
+                              );
+                              Navigator.of(context).pushReplacement(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      DashboardPage(month: previouseMonth),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.ease;
+
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
+
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_forward_ios),
                           ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Expanded(
+                        child: _DonutChart(
+                          categoryWithValue: state.expensesCategoryValue,
+                          totalOffAllExpenses:
+                              state.expenses?.totalExpenses ?? 0,
                         ),
-                        state.expenses != null
-                            ? Expanded(
-                                child: _ExpenseDetailView(
-                                    expenses: state.expenses!.expenses),
-                              )
-                            : const SizedBox.shrink(),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        height: 100,
+                        child: _ExpensesLegend(
+                          expenses: state.expensesCategoryValue,
+                        ),
+                      ),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Letze ausgaben',
+                        ),
+                      ),
+                      state.expenses != null
+                          ? Expanded(
+                              child: _ExpenseDetailView(
+                                  expenses: state.expenses!.expenses),
+                            )
+                          : const SizedBox.shrink()
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           }
 
@@ -200,49 +210,51 @@ class _DonutChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        PieChart(
-          PieChartData(
-            sections: categoryWithValue
-                .map(
-                  (e) => PieChartSectionData(
-                    value: e.value,
-                    color: e.expenseCategory.color,
-                    showTitle: false,
+    return categoryWithValue.isEmpty
+        ? const Center(child: Text('No data for this month'))
+        : Stack(
+            children: [
+              PieChart(
+                PieChartData(
+                  sections: categoryWithValue
+                      .map(
+                        (e) => PieChartSectionData(
+                          value: e.value,
+                          color: e.expenseCategory.color,
+                          showTitle: false,
+                        ),
+                      )
+                      .toList(),
+                  centerSpaceRadius: 100,
+                  sectionsSpace: 5,
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(
+                      width: 10,
+                      color: Colors.black,
+                    ),
                   ),
-                )
-                .toList(),
-            centerSpaceRadius: 100,
-            sectionsSpace: 5,
-            borderData: FlBorderData(
-              show: true,
-              border: Border.all(
-                width: 10,
-                color: Colors.black,
+                ),
               ),
-            ),
-          ),
-        ),
-        Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Total Expenses',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '$totalOffAllExpenses €',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        )),
-      ],
-    );
+              Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Total Expenses',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '$totalOffAllExpenses €',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )),
+            ],
+          );
   }
 }
 
