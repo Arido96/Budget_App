@@ -1,6 +1,6 @@
 # Budget Manager App
 
-<img src="readme_assets/image/s_01.png" width="150" height="350">
+
 
 A simple app to manage expenses.
 
@@ -22,3 +22,5 @@ flutter packages pub run build_runner build --delete-conflicting-outputs
 :x: Web<br>
 :x: macOS<br>
 :x: Linux<br>
+
+<img src="readme_assets/image/s_01.png" width=600 height=1200 >
