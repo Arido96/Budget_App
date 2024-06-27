@@ -1,6 +1,7 @@
 import 'package:budget_app/features/dashboard/domain/models/expense.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_cubit.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_state.dart';
+import 'package:budget_app/features/new_expense/ui/new_expense_page.dart';
 import 'package:budget_app/features/shared/category/domain/models/expense_categroy_value.dart';
 import 'package:budget_app/injection/injection.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -135,16 +136,44 @@ class _DashboardViewState extends State<_DashboardView> {
                           expenses: state.expensesCategoryValue,
                         ),
                       ),
-                      const Align(
+                      Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Letze ausgaben',
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Letze ausgaben',
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade900,
+                                borderRadius: BorderRadius.circular(
+                                  50,
+                                ),
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NewExpensePage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  color: Colors.white,
+                                  Icons.add,
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                       state.expenses != null
                           ? Expanded(
                               child: _ExpenseDetailView(
-                                  expenses: state.expenses!.expenses),
+                                expenses: state.expenses!.expenses,
+                              ),
                             )
                           : const SizedBox.shrink()
                     ],
@@ -186,7 +215,7 @@ class _ExpenseDetailView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(expenses[index].name),
-              Text(DateFormat('dd.MM.yyy').format(expenses[index].dateTime))
+              Text(DateFormat('dd.MM.yyyy').format(expenses[index].dateTime))
             ],
           ),
           trailing: Text(
