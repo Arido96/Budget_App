@@ -1,6 +1,6 @@
 # Budget Manager App
 
-![Screenshot 1](readme_assets/image/s_01.png)
+![Screenshot 1](readme_assets/image/s_01.png = 250x250)
 ![Screenshot 2](readme_assets/image/s_02.png)
 ![Screenshot 3](readme_assets/image/s_03.png)
 
