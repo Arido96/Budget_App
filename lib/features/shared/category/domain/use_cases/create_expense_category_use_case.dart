@@ -3,8 +3,8 @@ import 'package:budget_app/features/shared/category/interfaces/base_category_rep
 import 'package:injectable/injectable.dart';
 
 @injectable
-class CreateExpenseCategorieUseCase {
-  CreateExpenseCategorieUseCase(
+class CreateExpenseCategoryUseCase {
+  CreateExpenseCategoryUseCase(
       {required BaseCategoryRepository categoryRepository})
       : _categoryRepository = categoryRepository;
   final BaseCategoryRepository _categoryRepository;

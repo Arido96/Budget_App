@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class TextInput extends StatelessWidget {
-  const TextInput({
+class TextInputField extends StatelessWidget {
+  const TextInputField({
     super.key,
     required this.label,
     this.onTap,
     this.controller,
     this.suffixIcon,
     this.readOnly = false,
+    this.textInputType,
+    this.inputFormatters = const [],
   });
 
   final String label;
@@ -15,10 +18,14 @@ class TextInput extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? suffixIcon;
   final bool readOnly;
+  final TextInputType? textInputType;
+  final List<TextInputFormatter> inputFormatters;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      keyboardType: textInputType,
+      inputFormatters: inputFormatters,
       readOnly: readOnly,
       controller: controller,
       onTap: onTap,

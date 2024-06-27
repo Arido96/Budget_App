@@ -1,5 +1,5 @@
 import 'package:budget_app/features/shared/category/domain/models/expense_category.dart';
-import 'package:budget_app/shared/Errors/base_error.dart';
+import 'package:budget_app/features/shared/Errors/base_error.dart';
 
 enum CategoryStateStatus {
   idle,

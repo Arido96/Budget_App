@@ -1,5 +1,5 @@
-import 'package:budget_app/features/dashboard/domain/interfaces/base_expense_repository.dart';
-import 'package:budget_app/features/dashboard/domain/models/monthly_expenses.dart';
+import 'package:budget_app/features/shared/expense/domain/interfaces/base_expense_repository.dart';
+import 'package:budget_app/features/shared/expense/domain/models/monthly_expenses.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable

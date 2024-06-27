@@ -1,8 +1,8 @@
-import 'package:budget_app/features/dashboard/domain/models/expense.dart';
+import 'package:budget_app/features/shared/expense/domain/models/expense.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_cubit.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_state.dart';
 import 'package:budget_app/features/new_expense/ui/new_expense_page.dart';
-import 'package:budget_app/features/shared/category/domain/models/expense_categroy_value.dart';
+import 'package:budget_app/features/shared/category/domain/models/expense_category_value.dart';
 import 'package:budget_app/injection/injection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,7 @@ class _DashboardViewState extends State<_DashboardView> {
                           ),
                           IconButton(
                             onPressed: () {
-                              final previouseMonth = DateTime(
+                              final previousMonth = DateTime(
                                 state.expenses!.month.year,
                                 state.expenses!.month.month + 1,
                               );
@@ -98,7 +98,7 @@ class _DashboardViewState extends State<_DashboardView> {
                                 PageRouteBuilder(
                                   pageBuilder: (context, animation,
                                           secondaryAnimation) =>
-                                      DashboardPage(month: previouseMonth),
+                                      DashboardPage(month: previousMonth),
                                   transitionsBuilder: (context, animation,
                                       secondaryAnimation, child) {
                                     const begin = Offset(1.0, 0.0);
@@ -142,7 +142,7 @@ class _DashboardViewState extends State<_DashboardView> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text(
-                              'Letze ausgaben',
+                              'Last expenses',
                             ),
                             Container(
                               decoration: BoxDecoration(
@@ -153,11 +153,20 @@ class _DashboardViewState extends State<_DashboardView> {
                               ),
                               child: IconButton(
                                 onPressed: () {
-                                  Navigator.of(context).push(
+                                  Navigator.of(context)
+                                      .push(
                                     MaterialPageRoute(
                                       builder: (context) =>
                                           const NewExpensePage(),
                                     ),
+                                  )
+                                      .then(
+                                    (value) {
+                                      context
+                                          .read<DashboardCubit>()
+                                          .loadDataForThisMonth(
+                                              dateTime: state.expenses!.month);
+                                    },
                                   );
                                 },
                                 icon: const Icon(
@@ -209,7 +218,7 @@ class _ExpenseDetailView extends StatelessWidget {
           leading: Container(
             width: 20,
             height: 20,
-            color: expenses[index].categroy?.color ?? Colors.grey,
+            color: expenses[index].category?.color ?? Colors.grey,
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

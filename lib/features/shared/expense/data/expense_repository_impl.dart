@@ -1,5 +1,5 @@
-import 'package:budget_app/features/dashboard/domain/interfaces/base_expense_repository.dart';
-import 'package:budget_app/features/dashboard/domain/models/expense.dart';
+import 'package:budget_app/features/shared/expense/domain/interfaces/base_expense_repository.dart';
+import 'package:budget_app/features/shared/expense/domain/models/expense.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: BaseExpenseRepository)
@@ -16,5 +16,10 @@ class ExpenseRepositoryImpl implements BaseExpenseRepository {
         .toList();
 
     return expensesForMonth;
+  }
+
+  @override
+  Future<void> createExpense({required Expense expense}) async {
+    _expenses.add(expense);
   }
 }

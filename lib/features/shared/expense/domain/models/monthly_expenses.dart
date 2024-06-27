@@ -1,4 +1,4 @@
-import 'package:budget_app/features/dashboard/domain/models/expense.dart';
+import 'package:budget_app/features/shared/expense/domain/models/expense.dart';
 
 class MonthlyExpenses {
   MonthlyExpenses({

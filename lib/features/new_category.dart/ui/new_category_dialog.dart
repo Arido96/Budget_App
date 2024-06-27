@@ -64,7 +64,7 @@ class _DialogViewState extends State<_DialogView> {
                 const SizedBox(
                   height: 10,
                 ),
-                TextInput(
+                TextInputField(
                   label: 'Name',
                   controller: _nameTextEditingCOntroller,
                 ),

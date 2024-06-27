@@ -1,6 +1,6 @@
-import 'package:budget_app/features/dashboard/domain/models/monthly_expenses.dart';
-import 'package:budget_app/features/shared/category/domain/models/expense_categroy_value.dart';
-import 'package:budget_app/shared/Errors/base_error.dart';
+import 'package:budget_app/features/shared/expense/domain/models/monthly_expenses.dart';
+import 'package:budget_app/features/shared/category/domain/models/expense_category_value.dart';
+import 'package:budget_app/features/shared/Errors/base_error.dart';
 
 enum DashboardStateStatus {
   idle,

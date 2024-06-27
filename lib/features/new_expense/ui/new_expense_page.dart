@@ -2,9 +2,12 @@ import 'package:budget_app/features/shared/category/ui/cubit/category_cubit.dart
 import 'package:budget_app/features/new_category.dart/ui/new_category_dialog.dart';
 import 'package:budget_app/features/shared/category/domain/models/expense_category.dart';
 import 'package:budget_app/features/shared/category/ui/cubit/category_state.dart';
+import 'package:budget_app/features/shared/expense/cubit/expense_cubit.dart';
+import 'package:budget_app/features/shared/expense/domain/models/expense.dart';
 import 'package:budget_app/features/shared/theme/custom_widgets.dart';
 import 'package:budget_app/injection/injection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -14,17 +17,41 @@ class NewExpensePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider(
-          create: (context) => getIt<CategoryCubit>()..getAllCategories(),
-          child: _NewExpenseView()),
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => getIt<CategoryCubit>()..getAllCategories(),
+          ),
+          BlocProvider<ExpenseCubit>(
+            create: (context) => getIt<ExpenseCubit>(),
+          )
+        ],
+        child: const _NewExpenseView(),
+      ),
     );
   }
 }
 
-class _NewExpenseView extends StatelessWidget {
-  _NewExpenseView();
+class _NewExpenseView extends StatefulWidget {
+  const _NewExpenseView();
 
-  final TextEditingController datePickerController = TextEditingController();
+  @override
+  State<_NewExpenseView> createState() => _NewExpenseViewState();
+}
+
+class _NewExpenseViewState extends State<_NewExpenseView> {
+  final TextEditingController _datePickerController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _valueController = TextEditingController();
+  ExpenseCategory? dropdownValue;
+
+  @override
+  void dispose() {
+    _datePickerController.dispose();
+    _nameController.dispose();
+    _valueController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,22 +81,37 @@ class _NewExpenseView extends StatelessWidget {
             const SizedBox(
               height: 15,
             ),
-            const TextInput(
+            TextInputField(
               label: 'Name',
+              controller: _nameController,
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            TextInputField(
+              label: 'Value',
+              controller: _valueController,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              textInputType: TextInputType.number,
             ),
             const SizedBox(
               height: 15,
             ),
             BlocBuilder<CategoryCubit, CategoryState>(
               builder: (context, state) {
-                return _CategoryDropDown(categories: state.categories);
+                return _CategoryDropDown(
+                  categories: state.categories,
+                  onExpenseCategoryChange: (p0) {
+                    dropdownValue = p0;
+                  },
+                );
               },
             ),
             const SizedBox(
               height: 15,
             ),
             _DatePicker(
-              textEditingController: datePickerController,
+              textEditingController: _datePickerController,
             ),
             const Spacer(),
             SizedBox(
@@ -82,10 +124,20 @@ class _NewExpenseView extends StatelessWidget {
                     ),
                   ),
                 ),
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (context) => const NewCategoryDialog(),
-                ),
+                onPressed: () {
+                  final newExpense = Expense(
+                    name: _nameController.text,
+                    value: double.parse(_valueController.text),
+                    category: dropdownValue,
+                    dateTime: DateTime.parse(_datePickerController.text),
+                  );
+
+                  context
+                      .read<ExpenseCubit>()
+                      .createExpense(expense: newExpense);
+
+                  Navigator.of(context).pop();
+                },
                 child: const Text('Create'),
               ),
             )
@@ -97,9 +149,13 @@ class _NewExpenseView extends StatelessWidget {
 }
 
 class _CategoryDropDown extends StatefulWidget {
-  const _CategoryDropDown({required this.categories});
+  const _CategoryDropDown({
+    required this.categories,
+    required this.onExpenseCategoryChange,
+  });
 
   final List<ExpenseCategory> categories;
+  final Function(ExpenseCategory) onExpenseCategoryChange;
 
   @override
   State<_CategoryDropDown> createState() => _CategoryDropDownState();
@@ -119,16 +175,22 @@ class _CategoryDropDownState extends State<_CategoryDropDown> {
             expandedInsets: EdgeInsets.zero,
             hintText: 'Select category',
             onSelected: (ExpenseCategory? value) {
-              setState(() {
-                dropdownValue = value!;
-              });
+              if (value != null) {
+                setState(() {
+                  dropdownValue = value;
+                  widget.onExpenseCategoryChange(value);
+                });
+              }
             },
-            dropdownMenuEntries: widget.categories
-                .map<DropdownMenuEntry<ExpenseCategory?>>(
-                    (ExpenseCategory? value) {
-              return DropdownMenuEntry<ExpenseCategory?>(
-                  value: value, label: value!.name);
-            }).toList(),
+            dropdownMenuEntries:
+                widget.categories.map<DropdownMenuEntry<ExpenseCategory?>>(
+              (ExpenseCategory? value) {
+                return DropdownMenuEntry<ExpenseCategory?>(
+                  value: value,
+                  label: value!.name,
+                );
+              },
+            ).toList(),
           ),
         ),
         IconButton(
@@ -154,19 +216,28 @@ class _DatePicker extends StatefulWidget {
     required this.textEditingController,
   });
   final TextEditingController textEditingController;
+
   @override
   State<_DatePicker> createState() => _DatePickerState();
 }
 
 class _DatePickerState extends State<_DatePicker> {
+  final TextEditingController _dateController = TextEditingController();
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return TextInput(
+    return TextInputField(
       label: 'Select Date',
       readOnly: true,
       suffixIcon: const Icon(Icons.calendar_today),
       onTap: () async => _openDatePicker(),
-      controller: widget.textEditingController,
+      controller: _dateController,
     );
   }
 
@@ -181,7 +252,8 @@ class _DatePickerState extends State<_DatePicker> {
     if (pickedDate != null) {
       String formattedDate = DateFormat('dd.MM.yyyy').format(pickedDate);
       setState(() {
-        widget.textEditingController.text = formattedDate;
+        _dateController.text = formattedDate;
+        widget.textEditingController.text = pickedDate.toString();
       });
     }
   }

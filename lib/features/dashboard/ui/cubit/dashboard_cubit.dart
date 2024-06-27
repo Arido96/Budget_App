@@ -1,9 +1,9 @@
-import 'package:budget_app/features/dashboard/domain/models/expense.dart';
-import 'package:budget_app/features/dashboard/domain/use_cases/load_expenses_for_month_use_case.dart';
+import 'package:budget_app/features/shared/expense/domain/models/expense.dart';
+import 'package:budget_app/features/shared/expense/domain/use_cases/load_expenses_for_month_use_case.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_state.dart';
 import 'package:budget_app/features/shared/category/domain/models/expense_category.dart';
-import 'package:budget_app/features/shared/category/domain/models/expense_categroy_value.dart';
-import 'package:budget_app/shared/Errors/base_error.dart';
+import 'package:budget_app/features/shared/category/domain/models/expense_category_value.dart';
+import 'package:budget_app/features/shared/Errors/base_error.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 
@@ -37,14 +37,14 @@ class DashboardCubit extends Cubit<DashboardState> {
     final map = <ExpenseCategory, double>{};
 
     for (final expense in expenses) {
-      if (expense.categroy != null) {
-        if (map.containsKey(expense.categroy!)) {
-          var value = map[expense.categroy!]!;
+      if (expense.category != null) {
+        if (map.containsKey(expense.category!)) {
+          var value = map[expense.category!]!;
           value += expense.value;
-          map[expense.categroy!] = value;
+          map[expense.category!] = value;
         } else {
           map.addAll(
-              <ExpenseCategory, double>{expense.categroy!: expense.value});
+              <ExpenseCategory, double>{expense.category!: expense.value});
         }
       }
     }
