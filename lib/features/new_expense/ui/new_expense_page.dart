@@ -6,8 +6,8 @@ import 'package:budget_app/features/shared/expense/cubit/expense_cubit.dart';
 import 'package:budget_app/features/shared/expense/domain/models/expense.dart';
 import 'package:budget_app/features/shared/theme/custom_widgets.dart';
 import 'package:budget_app/injection/injection.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -43,6 +43,8 @@ class _NewExpenseViewState extends State<_NewExpenseView> {
   final TextEditingController _datePickerController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _valueController = TextEditingController();
+  final CurrencyTextInputFormatter _formatter =
+      CurrencyTextInputFormatter.currency(locale: 'de');
   ExpenseCategory? dropdownValue;
 
   @override
@@ -50,6 +52,7 @@ class _NewExpenseViewState extends State<_NewExpenseView> {
     _datePickerController.dispose();
     _nameController.dispose();
     _valueController.dispose();
+
     super.dispose();
   }
 
@@ -91,8 +94,10 @@ class _NewExpenseViewState extends State<_NewExpenseView> {
             TextInputField(
               label: 'Value',
               controller: _valueController,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               textInputType: TextInputType.number,
+              inputFormatters: [
+                _formatter,
+              ],
             ),
             const SizedBox(
               height: 15,
@@ -125,9 +130,11 @@ class _NewExpenseViewState extends State<_NewExpenseView> {
                   ),
                 ),
                 onPressed: () {
+                  final value = _formatter.getUnformattedValue();
+
                   final newExpense = Expense(
                     name: _nameController.text,
-                    value: double.parse(_valueController.text),
+                    value: double.parse(value.toString()),
                     category: dropdownValue,
                     dateTime: DateTime.parse(_datePickerController.text),
                   );

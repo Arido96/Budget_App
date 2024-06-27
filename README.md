@@ -1,16 +1,22 @@
-# budget_app
+# Budget Manager App
 
-A new Flutter project.
+Eine simple App um Ausgaben zu verwalten.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Vor dem ersten starten der App  folgenden Befehl ausführen .
 
-A few resources to get you started if this is your first Flutter project:
+```
+flutter packages pub run build_runner build --delete-conflicting-outputs 
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+#### Flutter Version : 3.22.2
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#### Tested Platforms:
+
+:white_check_mark: Android<br>
+:white_check_mark: IOS <br>
+:x: Windows <br>
+:x: Web <br>
+:x: MacOs <br>
+:x: Linux <br>
