@@ -1,7 +1,8 @@
-import 'package:budget_app/features/dashboard/domain/models/expense.dart';
+import 'package:budget_app/features/shared/expense/domain/models/expense.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_cubit.dart';
 import 'package:budget_app/features/dashboard/ui/cubit/dashboard_state.dart';
-import 'package:budget_app/features/shared/category/domain/models/expense_categroy_value.dart';
+import 'package:budget_app/features/new_expense/ui/new_expense_page.dart';
+import 'package:budget_app/features/shared/category/domain/models/expense_category_value.dart';
 import 'package:budget_app/injection/injection.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +10,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+  const DashboardPage({
+    super.key,
+    required this.month,
+  });
+
+  final DateTime month;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => getIt<DashboardCubit>()
-          ..loadDataForThisMonth(dateTime: DateTime.now()),
-        child: Scaffold(body: _DashboardView()));
+      create: (context) =>
+          getIt<DashboardCubit>()..loadDataForThisMonth(dateTime: month),
+      child: Scaffold(
+        body: _DashboardView(),
+      ),
+    );
   }
 }
 
@@ -26,37 +35,168 @@ class _DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<_DashboardView> {
-  final List<PieChartSectionData> sections = [];
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DashboardCubit, DashboardState>(
-      builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                  child: _DonutChart(
-                      categoryWithValue: state.expensesCategoryValue)),
-              SizedBox(
-                  height: 100,
-                  child:
-                      _ExpensesLegend(expenses: state.expensesCategoryValue)),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Letze ausgaben',
+    return SafeArea(
+      child: BlocBuilder<DashboardCubit, DashboardState>(
+        builder: (context, state) {
+          if (state.status == DashboardStateStatus.success) {
+            return PageView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(25),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              final nextMonth = DateTime(
+                                state.expenses!.month.year,
+                                state.expenses!.month.month - 1,
+                              );
+
+                              Navigator.of(context).pushReplacement(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      DashboardPage(month: nextMonth),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(-1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.ease;
+
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
+
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_back_ios),
+                          ),
+                          Text(
+                            DateFormat('MMMM - yyyy')
+                                .format(state.expenses!.month),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.displaySmall,
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              final previousMonth = DateTime(
+                                state.expenses!.month.year,
+                                state.expenses!.month.month + 1,
+                              );
+                              Navigator.of(context).pushReplacement(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      DashboardPage(month: previousMonth),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.ease;
+
+                                    var tween = Tween(begin: begin, end: end)
+                                        .chain(CurveTween(curve: curve));
+
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.arrow_forward_ios),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Expanded(
+                        child: _DonutChart(
+                          categoryWithValue: state.expensesCategoryValue,
+                          totalOffAllExpenses:
+                              state.expenses?.totalExpenses ?? 0,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 100,
+                        child: _ExpensesLegend(
+                          expenses: state.expensesCategoryValue,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Last expenses',
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade900,
+                                borderRadius: BorderRadius.circular(
+                                  50,
+                                ),
+                              ),
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NewExpensePage(),
+                                    ),
+                                  )
+                                      .then(
+                                    (value) {
+                                      context
+                                          .read<DashboardCubit>()
+                                          .loadDataForThisMonth(
+                                              dateTime: state.expenses!.month);
+                                    },
+                                  );
+                                },
+                                icon: const Icon(
+                                  color: Colors.white,
+                                  Icons.add,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      state.expenses != null
+                          ? Expanded(
+                              child: _ExpenseDetailView(
+                                expenses: state.expenses!.expenses,
+                              ),
+                            )
+                          : const SizedBox.shrink()
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _ExpenseDetailView(expenses: state.expenses),
-              ),
-            ],
-          ),
-        );
-      },
+              ],
+            );
+          }
+
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
     );
   }
 }
@@ -78,13 +218,13 @@ class _ExpenseDetailView extends StatelessWidget {
           leading: Container(
             width: 20,
             height: 20,
-            color: expenses[index].categroy?.color ?? Colors.grey,
+            color: expenses[index].category?.color ?? Colors.grey,
           ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(expenses[index].name),
-              Text(DateFormat('dd.MM.yyy').format(expenses[index].dateTime))
+              Text(DateFormat('dd.MM.yyyy').format(expenses[index].dateTime))
             ],
           ),
           trailing: Text(
@@ -100,55 +240,59 @@ class _ExpenseDetailView extends StatelessWidget {
 class _DonutChart extends StatelessWidget {
   const _DonutChart({
     required this.categoryWithValue,
+    required this.totalOffAllExpenses,
   });
 
   final List<ExpenseCategoryValue> categoryWithValue;
+  final double totalOffAllExpenses;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        PieChart(
-          PieChartData(
-            sections: categoryWithValue
-                .map(
-                  (e) => PieChartSectionData(
-                    value: e.value,
-                    color: e.expenseCategory.color,
-                    showTitle: false,
+    return categoryWithValue.isEmpty
+        ? const Center(child: Text('No data for this month'))
+        : Stack(
+            children: [
+              PieChart(
+                PieChartData(
+                  sections: categoryWithValue
+                      .map(
+                        (e) => PieChartSectionData(
+                          value: e.value,
+                          color: e.expenseCategory.color,
+                          showTitle: false,
+                        ),
+                      )
+                      .toList(),
+                  centerSpaceRadius: 100,
+                  sectionsSpace: 5,
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(
+                      width: 10,
+                      color: Colors.black,
+                    ),
                   ),
-                )
-                .toList(),
-            centerSpaceRadius: 100,
-            sectionsSpace: 5,
-            borderData: FlBorderData(
-              show: true,
-              border: Border.all(
-                width: 10,
-                color: Colors.black,
+                ),
               ),
-            ),
-          ),
-        ),
-        Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Total Expenses',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '${categoryWithValue.map((e) => e.value).reduce((a, b) => a + b).toString()} €',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        )),
-      ],
-    );
+              Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Total Expenses',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '$totalOffAllExpenses €',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )),
+            ],
+          );
   }
 }
 

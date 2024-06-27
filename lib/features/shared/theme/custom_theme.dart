@@ -6,7 +6,7 @@ final appTheme = ThemeData(
 
   // Define the default brightness and colors.
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.purple,
+    seedColor: Colors.blue.shade900,
     // ···
     brightness: Brightness.light,
   ),
