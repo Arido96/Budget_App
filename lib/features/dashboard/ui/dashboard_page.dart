@@ -228,7 +228,7 @@ class _ExpenseDetailView extends StatelessWidget {
             ],
           ),
           trailing: Text(
-            '\$${expenses[index].value.toString()}',
+            '${expenses[index].value.toString()} €',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         );
@@ -283,7 +283,7 @@ class _DonutChart extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '$totalOffAllExpenses €',
+                    '${totalOffAllExpenses.toStringAsFixed(2)} €',
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

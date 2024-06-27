@@ -1,5 +1,9 @@
 # Budget Manager App
 
+![Screenshot 1](readme_assets/image/s_01.png)
+![Screenshot 2](readme_assets/image/s_02.png)
+![Screenshot 3](readme_assets/image/s_03.png)
+
 A simple app to manage expenses.
 
 ## Getting Started
