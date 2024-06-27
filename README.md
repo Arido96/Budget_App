@@ -1,6 +1,6 @@
 # Budget Manager App
 
-<img src="readme_assets/image/s_01.png" width="200" height="400">
+<img src="readme_assets/image/s_01.png" width="150" height="350">
 
 A simple app to manage expenses.
 
